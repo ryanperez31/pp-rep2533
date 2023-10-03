@@ -25,5 +25,45 @@ sudo make install
 # If you've reached here, ANTLR runtime should be installed system-wide
 echo "ANTLR4 C++ runtime setup complete."
 
+# Step 2: Download and setup Neo4j
+NEO4J_TAR_URL="https://neo4j.com/artifact.php?name=neo4j-community-5.12.0-unix.tar.gz"
+NEO4J_DIR="$SETUP_DIR/neo4j"
+
+if [ ! -d "$NEO4J_DIR" ]; then
+    echo "Downloading Neo4j..."
+    cd $SETUP_DIR
+    curl -O $NEO4J_TAR_URL
+
+    echo "Extracting Neo4j tarball..."
+    tar zxf neo4j-enterprise-5.12.0-unix.tar.gz
+
+    echo "Setting up Neo4j directory..."
+    mv neo4j-enterprise-5.12.0 $NEO4J_DIR
+
+    echo "Accepting Neo4j license..."
+    export NEO4J_ACCEPT_LICENSE_AGREEMENT=yes
+
+    echo "Starting Neo4j in the background..."
+    $NEO4J_DIR/bin/neo4j start
+else
+    echo "Neo4j seems to be set up already. Skipping this step."
+fi
+
+# Wait for Neo4j to start up
+echo "Waiting for Neo4j to start..."
+sleep 15
+
+# Check if Neo4j is up and running
+echo "Checking if Neo4j is running..."
+curl_response=$(curl --silent --write-out "HTTPSTATUS:%{http_code}" -u neo4j:neo4j http://localhost:7474/db/data/)
+http_status=$(echo $curl_response | tr -d '\n' | sed -e 's/.*HTTPSTATUS://')
+
+if [ $http_status -eq 401 ]; then
+    echo "Neo4j is up and running! Note: You might need to change the default password."
+    echo "Go to http://localhost:7474"
+else
+    echo "Something went wrong. Couldn't confirm if Neo4j is running."
+fi
+
 # Return to the original directory
 cd -
