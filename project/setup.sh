@@ -1,10 +1,14 @@
 #!/bin/bash
 
-# Directory where everything related to ANTLR will be set up
+# Directory where ANTLR will be set up
 ANTLR_DIR="$HOME/antlr-setup"
 
-# Ensure the ANTLR setup directory exists
+# Directory where Neo4j will be set up
+NEO4J_DIR="$HOME/neo4j-setup"
+
+# Ensure the ANTLR and Neo4j setup directories exist
 mkdir -p $ANTLR_DIR
+mkdir -p $NEO4J_DIR
 
 # Step 1: Clone the specific ANTLR4 C++ runtime branch
 echo "Cloning ANTLR4 C++ runtime from 'dev' branch..."
@@ -25,26 +29,22 @@ sudo make install
 # If you've reached here, ANTLR runtime should be installed system-wide
 echo "ANTLR4 C++ runtime setup complete."
 
-# Step 2: Download and setup Neo4j
+# Step 3: Download and setup Neo4j
 NEO4J_TAR_URL="https://neo4j.com/artifact.php?name=neo4j-community-5.12.0-unix.tar.gz"
-NEO4J_DIR="$SETUP_DIR/neo4j"
 
 if [ ! -d "$NEO4J_DIR" ]; then
     echo "Downloading Neo4j..."
-    cd $SETUP_DIR
+    cd $NEO4J_DIR
     curl -O $NEO4J_TAR_URL
 
     echo "Extracting Neo4j tarball..."
-    tar zxf neo4j-enterprise-5.12.0-unix.tar.gz
-
-    echo "Setting up Neo4j directory..."
-    mv neo4j-enterprise-5.12.0 $NEO4J_DIR
+    tar zxf neo4j-community-5.12.0-unix.tar.gz
 
     echo "Accepting Neo4j license..."
     export NEO4J_ACCEPT_LICENSE_AGREEMENT=yes
 
     echo "Starting Neo4j in the background..."
-    $NEO4J_DIR/bin/neo4j start
+    $NEO4J_DIR/neo4j-community-5.12.0/bin/neo4j start
 else
     echo "Neo4j seems to be set up already. Skipping this step."
 fi
@@ -64,6 +64,10 @@ if [ $http_status -eq 401 ]; then
 else
     echo "Something went wrong. Couldn't confirm if Neo4j is running."
 fi
+
+# Step 4: Open Cypher Shell
+echo "Opening Cypher Shell..."
+$NEO4J_DIR/neo4j-community-5.12.0/bin/cypher-shell
 
 # Return to the original directory
 cd -
