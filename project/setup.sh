@@ -32,10 +32,15 @@ echo "ANTLR4 C++ runtime setup complete."
 # Step 3: Download and setup Neo4j
 NEO4J_TAR_URL="https://neo4j.com/artifact.php?name=neo4j-community-5.12.0-unix.tar.gz"
 
-if [ ! -d "$NEO4J_DIR" ]; then
+if [ ! -d "$NEO4J_DIR/neo4j-community-5.12.0" ]; then
     echo "Downloading Neo4j..."
     cd $NEO4J_DIR
-    curl -O $NEO4J_TAR_URL
+    curl -L -O $NEO4J_TAR_URL || { echo "Failed to download Neo4j"; exit 1; }
+
+    # Rename the file in case it's named artifact.php
+    if [ -f "artifact.php" ]; then
+        mv artifact.php neo4j-community-5.12.0-unix.tar.gz
+    fi
 
     echo "Extracting Neo4j tarball..."
     tar zxf neo4j-community-5.12.0-unix.tar.gz
@@ -47,6 +52,7 @@ if [ ! -d "$NEO4J_DIR" ]; then
     $NEO4J_DIR/neo4j-community-5.12.0/bin/neo4j start
 else
     echo "Neo4j seems to be set up already. Skipping this step."
+    $NEO4J_DIR/neo4j-community-5.12.0/bin/neo4j start
 fi
 
 # Wait for Neo4j to start up
@@ -60,7 +66,7 @@ http_status=$(echo $curl_response | tr -d '\n' | sed -e 's/.*HTTPSTATUS://')
 
 if [ $http_status -eq 401 ]; then
     echo "Neo4j is up and running! Note: You might need to change the default password."
-    echo "Go to http://localhost:7474"
+    xdg-open http://localhost:7474
 else
     echo "Something went wrong. Couldn't confirm if Neo4j is running."
 fi
