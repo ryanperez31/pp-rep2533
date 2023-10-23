@@ -6,9 +6,13 @@ ANTLR_DIR="$HOME/antlr-setup"
 # Directory where Neo4j will be set up
 NEO4J_DIR="$HOME/neo4j-setup"
 
-# Ensure the ANTLR and Neo4j setup directories exist
+# Directory where CPR will be set up
+CPR_DIR="$HOME/cpr-setup"
+
+# Ensure the ANTLR, Neo4j, and CPR setup directories exist
 mkdir -p $ANTLR_DIR
 mkdir -p $NEO4J_DIR
+mkdir -p $CPR_DIR
 
 # Step 1: Clone the specific ANTLR4 C++ runtime branch
 echo "Cloning ANTLR4 C++ runtime from 'dev' branch..."
@@ -21,13 +25,27 @@ ANTLR_SRC_DIR="$ANTLR_DIR/antlr4/runtime/Cpp"
 mkdir -p $ANTLR_SRC_DIR/build
 cd $ANTLR_SRC_DIR/build
 
-# Use CMake to configure and build the ANTLR4 C++ runtime
+# Step 3: Use CMake to configure and build the ANTLR4 C++ runtime
 cmake .. -DWITH_DEMO=False -DANTLR4_INSTALL=system
 make -j4
 sudo make install
 
 # If you've reached here, ANTLR runtime should be installed system-wide
 echo "ANTLR4 C++ runtime setup complete."
+
+# Step 4: Clone, build, and install the CPR library
+echo "Setting up CPR library..."
+cd $CPR_DIR
+git clone --recursive https://github.com/whoshuu/cpr.git
+
+# Step 5: Navigate to the cloned directory and build
+cd cpr
+mkdir build && cd build
+cmake ..
+make -j4
+sudo make install
+
+echo "CPR setup complete."
 
 # Step 3: Download and setup Neo4j
 NEO4J_TAR_URL="https://neo4j.com/artifact.php?name=neo4j-community-5.12.0-unix.tar.gz"

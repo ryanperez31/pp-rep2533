@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cpr/cpr.h>
 #include <antlr4-runtime.h>
 #include "antlr/CypherLexer.h"
 #include "antlr/CypherParser.h"
@@ -14,13 +15,28 @@ int main() {
     antlr4::CommonTokenStream tokens(&lexer);
     CypherParser parser(&tokens);
 
-    try {
-        parser.oC_Cypher();
+    parser.removeErrorListeners(); // remove the default error listener
+    antlr4::ConsoleErrorListener consoleErrorListener; // for printing to std::cerr
+    parser.addErrorListener(&consoleErrorListener); // add our error listener
+
+    auto tree = parser.oC_Cypher();
+
+    if (parser.getNumberOfSyntaxErrors() == 0) {
         std::cout << "Query is valid!" << std::endl;
-    } catch (const std::exception &e) {
-        std::cerr << "Error: " << e.what() << std::endl;
+    } else {
         std::cerr << "Query is invalid!" << std::endl;
     }
 
-    return 0;
+    // After getting the query from the user:
+    // cpr::Response r = cpr::Post(cpr::Url{"http://localhost:8080/query"},
+    //                             cpr::Body{inputQuery},
+    //                             cpr::Header{{"Content-Type", "text/plain"}});
+                            
+    // if (r.status_code == 200) {
+    //     std::cout << "Server Response: " << r.text << std::endl;
+    // } else {
+    //     std::cerr << "Failed to connect to server or server error." << std::endl;
+    // }
+    
+    // return 0;
 }
