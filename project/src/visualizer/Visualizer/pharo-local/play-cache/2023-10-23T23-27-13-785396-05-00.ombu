@@ -1,0 +1,7 @@
+OmEntry {
+	#tags : {
+		#timestamp : DateAndTime [ '2023-10-23T23:27:17.295128-05:00' ],
+		#self : OmReference [ '1' ]
+	},
+	#content : 'RSChartExample new example01Markers open'
+}

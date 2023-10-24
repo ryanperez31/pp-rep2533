@@ -1,0 +1,19 @@
+OmEntry {
+	#tags : {
+		#timestamp : DateAndTime [ '2023-10-23T23:00:44.869636-05:00' ],
+		#self : OmReference [ '1' ]
+	},
+	#content : 'Metacello new\r   baseline: \'JSON\';\r   repository: \'github://SvenVC/NeoJSON/repository\';\r   load.\r'
+}OmEntry {
+	#tags : {
+		#timestamp : DateAndTime [ '2023-10-23T23:03:38.28315-05:00' ],
+		#self : OmReference [ '2' ]
+	},
+	#content : 'Metacello new\r  baseline: \'JSON\';\r  repository: \'github://svenvc/NeoJSON/repository\';\r  load.\r\r'
+}OmEntry {
+	#tags : {
+		#timestamp : DateAndTime [ '2023-10-23T23:04:36.037159-05:00' ],
+		#self : OmReference [ '3' ]
+	},
+	#content : 'ZnClient new get: \'http://www.google.com\'.\r\r\r'
+}

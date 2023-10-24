@@ -1,0 +1,12 @@
+OmEntry {
+	#tags : {
+		#author : 'Unknown',
+		#time : DateAndTime [ '2023-10-23T22:06:40.133-05:00' ],
+		#prior : OmReference [ 'Pharo11-SNAPSHOT-64bit-ea28d85.320DE0C91858', '8747' ],
+		#self : OmReference [ '1' ]
+	},
+	#content : EpCategoryRegistration {
+		#classCategoryName : #Visualizer,
+		#affectedPackageName : #Visualizer
+	}
+}
