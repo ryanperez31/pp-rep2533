@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cpr/cpr.h>
+#include <cpr/util.h>  // for urlEncode
 #include <antlr4-runtime.h>
 #include "antlr/CypherLexer.h"
 #include "antlr/CypherParser.h"
@@ -25,18 +26,20 @@ int main() {
         std::cout << "Query is valid!" << std::endl;
     } else {
         std::cerr << "Query is invalid!" << std::endl;
+        return 1;  // Exit early if query is invalid
     }
 
-    // After getting the query from the user:
-    // cpr::Response r = cpr::Post(cpr::Url{"http://localhost:8080/query"},
-    //                             cpr::Body{inputQuery},
-    //                             cpr::Header{{"Content-Type", "text/plain"}});
+    // URL encode the query
+    std::string encodedQuery = cpr::util::urlEncode(inputQuery);
+
+    // Send GET request with the query as a URL parameter
+    cpr::Response r = cpr::Get(cpr::Url{"http://localhost:8080/custom-query?query=" + encodedQuery});
                             
-    // if (r.status_code == 200) {
-    //     std::cout << "Server Response: " << r.text << std::endl;
-    // } else {
-    //     std::cerr << "Failed to connect to server or server error." << std::endl;
-    // }
+    if (r.status_code == 200) {
+        std::cout << "Server Response: " << r.text << std::endl;
+    } else {
+        std::cerr << "Failed to connect to server or server error. Status code: " << r.status_code << std::endl;
+    }
     
-    // return 0;
+    return 0;
 }
