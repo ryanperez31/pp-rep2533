@@ -2,124 +2,86 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
+	"strings"
+
+	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
 )
 
-type Size interface {
-	Size() int
-}
-type gnode struct {
-	// value string;
-	// size int;
-	props map[string]string
+const (
+	NEO4J_URI      = "bolt://localhost:7687"
+	NEO4J_USERNAME = "neo4j"
+	NEO4J_PASSWORD = "31chargers"
+)
+
+// runQuery runs a query on the Neo4j database and returns the results.
+func runQuery(query string) (string, error) {
+	driver, err := neo4j.NewDriver(NEO4J_URI, neo4j.BasicAuth(NEO4J_USERNAME, NEO4J_PASSWORD, ""))
+	if err != nil {
+		return "", err
+	}
+	defer driver.Close()
+
+	session := driver.NewSession(neo4j.SessionConfig{})
+	defer session.Close()
+
+	result, err := session.Run(query, map[string]interface{}{})
+	if err != nil {
+		return "", err
+	}
+
+	records, err := result.Collect()
+	if err != nil {
+		return "", err
+	}
+
+	var resultsStr []string
+	for _, record := range records {
+		for _, value := range record.Values {
+			resultsStr = append(resultsStr, fmt.Sprint(value))
+		}
+	}
+
+	return fmt.Sprintf("Query: %s\nResults: %s", query, strings.Join(resultsStr, ", ")), nil
 }
 
-func makeGnode() *gnode {
-	return &gnode{props: map[string]string{}}
-}
-func (n *gnode) Put(key string, val string) {
-	n.props[key] = val
-}
-func (n *gnode) String() string {
-	return fmt.Sprintf("%v", n.props)
+func preselectedQueriesHandler(w http.ResponseWriter, r *http.Request) {
+	// These are just example queries. Adjust them based on your Neo4j database schema and data.
+	queries := []string{
+		"MATCH (n) RETURN n LIMIT 5",
+		"MATCH (n:Person) RETURN n.name LIMIT 5",
+	}
+
+	for _, query := range queries {
+		result, err := runQuery(query)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		fmt.Fprintf(w, "%s\n\n", result)
+	}
 }
 
-type Graph struct {
-	nodes []*gnode
+func customQueryHandler(w http.ResponseWriter, r *http.Request) {
+	query := r.URL.Query().Get("query")
+	if query == "" {
+		http.Error(w, "Query parameter is missing.", http.StatusBadRequest)
+		return
+	}
+
+	result, err := runQuery(query)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	fmt.Fprint(w, result)
 }
 
-func makeGraph() *Graph {
-	return &Graph{nodes: make([]*gnode, 0, 10)}
-}
-func (g *Graph) Append(n *gnode) {
-	g.nodes = append(g.nodes, n)
-}
-func (g *Graph) String() string {
-	return "graph"
-}
-func (g *Graph) Size() int {
-	return len(g.nodes)
-}
-func (g *Graph) Sum() (int, error) {
-	sum := 0
-	for _, el := range g.nodes {
-		sum += len(el.props)
-	}
-	return sum, nil
-}
-func (g *Graph) Psum(ch chan<- int) {
-	sum := 0
-	for _, el := range g.nodes {
-		sum += len(el.props)
-	}
-	ch <- sum
-}
-func (g *Graph) Traverse(ch chan<- int) {
-	defer close(ch)
-	for _, el := range g.nodes {
-		ch <- len(el.props)
-	}
-}
-func (g *Graph) Traverse2(vals chan<- int, ixs chan<- int) {
-	defer close(vals)
-	defer close(ixs)
-	for ix, el := range g.nodes {
-		vals <- len(el.props)
-		ixs <- ix
-	}
-}
-func (g *Graph) Help(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "this is help")
-}
-func (g *Graph) Info(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "this is info")
-}
 func main() {
-	n := makeGnode()
-	// var g *gnode = ...
-	n.Put("a", "1")
-	fmt.Printf("%v\n", n)
-	fmt.Printf("%T\n", n)
-	g := makeGraph()
-	g.Append(n)
-	fmt.Printf("%v\n", g)
-	fmt.Printf("graph.size = %d\n", g.Size())
-	var g2 *Graph = nil
-	var s Size = g2
-	// fmt.Printf("graph.size = %d\n", s.Size())
-	if s != nil {
-		fmt.Printf("not null\n")
-	}
-	// ch := make(chan int)
-	// go g.Psum(ch)
-	// res := <- ch
-	// fmt.Printf("sum = %v\n", res)
-	// sum := 0
-	// for v := range ch {
-	// sum += v
-	// }
-	// fmt.Printf("sum = %v\n", sum)
-	vals := make(chan int)
-	ixs := make(chan int)
-	go g.Traverse2(vals, ixs)
-	for {
-		var v int
-		var ok bool
-		select {
-		case v, ok = <-vals:
-		case v, ok = <-ixs:
-		}
-		if !ok {
-			break
-		}
-		fmt.Printf("%v\n", v)
-	}
-	// http.HandleFunc("/help", g.Help)
-	// http.HandleFunc("/info", g.Info)
-	// http.ListenAndServe(":8080", nil)
-	// sum, err := g.Sum()
-	// if err != nil {
-	// // ....
-	// }
-	// fmt.Printf("%v\n", sum)
+	http.HandleFunc("/preselected-queries", preselectedQueriesHandler)
+	http.HandleFunc("/custom-query", customQueryHandler)
+
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
