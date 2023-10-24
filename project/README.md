@@ -9,3 +9,7 @@ Then run the client code in the "main.cpp" file
             -project/src/client
     Step 4: Run the command "g++ -std=c++17 main.cpp antlr/CypherLexer.cpp antlr/CypherParser.cpp -I/usr/local/include/antlr4-runtime -L/usr/local/lib -o client_app -lantlr4-runtime"
     Step 5: The run the client execultible by running the command "./client_app"
+
+
+go run server.go -uri "bolt://localhost:7687" -username "your_username" -password "your_password"
+

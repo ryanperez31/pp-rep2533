@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
@@ -9,10 +10,10 @@ import (
 	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
 )
 
-const (
-	NEO4J_URI      = "bolt://localhost:7687"
-	NEO4J_USERNAME = "neo4j"
-	NEO4J_PASSWORD = "31chargers"
+var (
+	NEO4J_URI      string
+	NEO4J_USERNAME string
+	NEO4J_PASSWORD string
 )
 
 // runQuery runs a query on the Neo4j database and returns the results.
@@ -80,6 +81,14 @@ func customQueryHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	flag.StringVar(&NEO4J_URI, "uri", "bolt://localhost:7687", "URI for the Neo4j database")
+	flag.StringVar(&NEO4J_USERNAME, "username", "neo4j", "Username for the Neo4j database")
+	flag.StringVar(&NEO4J_PASSWORD, "password", "", "Password for the Neo4j database")
+	flag.Parse()
+
+	if NEO4J_PASSWORD == "" {
+		log.Fatal("Password must be provided.")
+	}
 	http.HandleFunc("/preselected-queries", preselectedQueriesHandler)
 	http.HandleFunc("/custom-query", customQueryHandler)
 
