@@ -1,1 +1,0 @@
-Metacello new    baseline: 'Roassal3';    repository: 'github://ObjectProfile/Roassal3:v1.01';    load.

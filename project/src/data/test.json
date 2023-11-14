@@ -1,0 +1,10 @@
+{
+    "nodes": [
+      {"id": 1, "label": "Person", "properties": {"name": "Alice"}},
+      {"id": 2, "label": "Person", "properties": {"name": "Bob"}}
+    ],
+    "relationships": [
+      {"source": 1, "target": 2, "type": "FRIENDS_WITH"}
+    ]
+  }
+  

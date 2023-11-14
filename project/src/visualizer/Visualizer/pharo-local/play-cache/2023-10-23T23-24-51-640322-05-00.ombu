@@ -1,7 +1,0 @@
-OmEntry {
-	#tags : {
-		#timestamp : DateAndTime [ '2023-10-23T23:24:55.235657-05:00' ],
-		#self : OmReference [ '1' ]
-	},
-	#content : 'Metacello new\r    baseline: \'Roassal3\';\r    repository: \'github://ObjectProfile/Roassal3:v1.01\';\r    load.'
-}

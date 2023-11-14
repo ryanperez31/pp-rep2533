@@ -1,7 +1,0 @@
-OmEntry {
-	#tags : {
-		#timestamp : DateAndTime [ '2023-10-23T23:06:45.594415-05:00' ],
-		#self : OmReference [ '1' ]
-	},
-	#content : 'Metacello new\r  repository: \'github://svenvc/NeoJSON/repository\';\r  baseline: \'NeoJSON\';\r  load.'
-}

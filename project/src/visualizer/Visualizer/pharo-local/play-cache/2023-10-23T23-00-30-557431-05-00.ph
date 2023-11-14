@@ -1,1 +1,0 @@
-ZnClient new get: 'http://www.google.com'.

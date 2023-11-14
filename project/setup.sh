@@ -1,5 +1,38 @@
 #!/bin/bash
 
+# Define directories relative to the script location
+SCRIPT_DIR=$(dirname "$0")
+OCAML_DIR="$SCRIPT_DIR/src/visualizer/OCaml"
+OPAM_DIR="$OCAML_DIR/opam"
+
+# Create the OCaml and OPAM directories if they don't exist
+mkdir -p "$OCAML_DIR"
+mkdir -p "$OPAM_DIR"
+
+# Check if OPAM is installed
+if ! command -v opam &> /dev/null
+then
+    echo "OPAM could not be found, installing..."
+    bash -c "sh <(curl -fsSL https://raw.githubusercontent.com/ocaml/opam/master/shell/install.sh)"
+else
+    echo "OPAM is already installed."
+fi
+
+# Initialize OPAM in the specific directory
+echo "Initializing OPAM in $OPAM_DIR..."
+opam init --root="$OPAM_DIR" --disable-sandboxing -y
+
+# Set the OPAM environment for the current session
+eval $(opam env --root="$OPAM_DIR")
+
+# Create a local switch for OCaml in the OCaml directory, letting OPAM choose the OCaml version
+echo "Creating a local switch for OCaml in $OCAML_DIR..."
+opam switch create "$OCAML_DIR" --root="$OPAM_DIR"
+
+# Install Yojson and OCamlFind
+echo "Installing Yojson and OCamlFind..."
+opam install yojson ocamlfind -y
+
 # Directory where ANTLR will be set up
 ANTLR_DIR="$HOME/antlr-setup"
 
@@ -88,6 +121,19 @@ if [ $http_status -eq 401 ]; then
 else
     echo "Something went wrong. Couldn't confirm if Neo4j is running."
 fi
+
+# Step 6: Download nlohmann/json library used to parse JSON in c++
+# echo "Downloading nlohmann/json library..."
+# JSON_DIR="$HOME/json-setup"
+# mkdir -p $JSON_DIR
+# cd $JSON_DIR
+# curl -L -O https://raw.githubusercontent.com/nlohmann/json/master/single_include/nlohmann/json.hpp
+
+# if [ -f "json.hpp" ]; then
+#     echo "nlohmann/json library setup complete."
+# else
+#     echo "Failed to download nlohmann/json library."
+# fi
 
 # Step 4: Open Cypher Shell
 echo "Opening Cypher Shell..."

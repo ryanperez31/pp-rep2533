@@ -5,6 +5,6 @@
 javacc-7.0.10.tar.gz
 javacc-javacc-7.0.10
 antlr-4.9.2-complete.jar
-
+json.hpp
 # Pharo local directory
 pharo-local/

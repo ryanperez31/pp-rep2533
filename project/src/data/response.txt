@@ -1,0 +1,2 @@
+Query: MATCH (n) RETURN n LIMIT 25
+Results: {0 [Person] map[age:30 name:Alice]}, {1 [Person] map[age:30 name:John]}, {2 [Person] map[age:33 name:Carol]}, {3 [Person] map[age:30]}, {4 [Person] map[age:30]}

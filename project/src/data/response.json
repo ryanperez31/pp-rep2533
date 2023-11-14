@@ -1,0 +1,40 @@
+{
+    "nodes": [
+        {
+            "id": 0,
+            "label": "Person",
+            "properties": {
+                "age": "30 name:Alice"
+            }
+        },
+        {
+            "id": 1,
+            "label": "Person",
+            "properties": {
+                "age": "30 name:John"
+            }
+        },
+        {
+            "id": 2,
+            "label": "Person",
+            "properties": {
+                "age": "33 name:Carol"
+            }
+        },
+        {
+            "id": 3,
+            "label": "Person",
+            "properties": {
+                "age": 30
+            }
+        },
+        {
+            "id": 4,
+            "label": "Person",
+            "properties": {
+                "age": 30
+            }
+        }
+    ],
+    "relationships": []
+}
