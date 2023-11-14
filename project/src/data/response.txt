@@ -1,2 +1,2 @@
-Query: MATCH (n) RETURN n LIMIT 25
-Results: {0 [Person] map[age:30 name:Alice]}, {1 [Person] map[age:30 name:John]}, {2 [Person] map[age:33 name:Carol]}, {3 [Person] map[age:30]}, {4 [Person] map[age:30]}
+Query: MATCH (n)-[r]->() RETURN n, r
+Results: {3 [Person] map[age:30]}, {0 3 4 MARRIED map[]}
